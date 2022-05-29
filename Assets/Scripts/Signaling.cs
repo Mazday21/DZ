@@ -18,7 +18,7 @@ public class Signaling : MonoBehaviour
         {
             if (!_isEnter)
             {
-                CheckCoroutine();
+                StopCoroutine();
                 _volumeChange = StartCoroutine(SoundIncrease());
                 _alarm.Play();
                 _isEnter = true;
@@ -26,7 +26,7 @@ public class Signaling : MonoBehaviour
             }
             else
             {
-                CheckCoroutine();
+                StopCoroutine();
                 _volumeChange = StartCoroutine(SoundDecrease());
                 _isEnter = false;
                 _sprite.color = Color.white;
@@ -34,7 +34,7 @@ public class Signaling : MonoBehaviour
         }
     }
 
-    private void CheckCoroutine()
+    private void StopCoroutine()
     {
         if (_volumeChange != null)
         {
