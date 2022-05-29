@@ -10,6 +10,8 @@ public class Signaling : MonoBehaviour
 
     private bool IsEnter = false;
     private AudioSource _alarm;
+    private Coroutine _soundIncreaseCoroutine;
+    private Coroutine _soundDecreaseCoroutine;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -17,18 +19,24 @@ public class Signaling : MonoBehaviour
         {
             if (!IsEnter)
             {
-                StopCoroutine(SoundReducer());
+                if(_soundDecreaseCoroutine != null)
+                {
+                    StopCoroutine(_soundDecreaseCoroutine);
+                }
                 _alarm.Play();
                 IsEnter = true;
                 _sprite.color = Color.black;
-                StartCoroutine(SoundMagnifier());
+                _soundIncreaseCoroutine = StartCoroutine(SoundIncrease());
             }
             else
             {
-                StopCoroutine(SoundMagnifier());
+                if (_soundIncreaseCoroutine != null)
+                {
+                    StopCoroutine(_soundIncreaseCoroutine);
+                }
                 IsEnter = false;
                 _sprite.color = Color.white;
-                StartCoroutine(SoundReducer());
+                _soundDecreaseCoroutine = StartCoroutine(SoundDecrease());
             }
         }
     }
@@ -36,24 +44,25 @@ public class Signaling : MonoBehaviour
     private void Awake()
     {
         _alarm = GetComponent<AudioSource>();
+        _alarm.volume = 0;
     }
 
-    private IEnumerator SoundMagnifier()
+    private IEnumerator SoundIncrease()
     {
         var waitForSecond = new WaitForSeconds(0.1f);
 
-        for (float i = 0; i < 1; i += 0.05f)
+        for (float i = _alarm.volume; i < 1; i += 0.05f)
         {
             _alarm.volume = i;
             yield return waitForSecond;
         }
     }
 
-    private IEnumerator SoundReducer()
+    private IEnumerator SoundDecrease()
     {
         var waitForSecond = new WaitForSeconds(0.1f);
 
-        for (float i = 1f; i > 0.001f; i -= 0.05f)
+        for (float i = _alarm.volume; i > 0.001f; i -= 0.05f)
         {
             _alarm.volume = i;
             if(_alarm.volume < 0.1f)
