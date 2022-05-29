@@ -8,36 +8,37 @@ public class Signaling : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _sprite;
 
-    private bool IsEnter = false;
+    private bool _isEnter = false;
     private AudioSource _alarm;
-    private Coroutine _soundIncreaseCoroutine;
-    private Coroutine _soundDecreaseCoroutine;
+    private Coroutine _volumeChange;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.TryGetComponent<Player>(out Player player))
         {
-            if (!IsEnter)
+            if (!_isEnter)
             {
-                if(_soundDecreaseCoroutine != null)
-                {
-                    StopCoroutine(_soundDecreaseCoroutine);
-                }
+                CheckCoroutine();
+                _volumeChange = StartCoroutine(SoundIncrease());
                 _alarm.Play();
-                IsEnter = true;
+                _isEnter = true;
                 _sprite.color = Color.black;
-                _soundIncreaseCoroutine = StartCoroutine(SoundIncrease());
             }
             else
             {
-                if (_soundIncreaseCoroutine != null)
-                {
-                    StopCoroutine(_soundIncreaseCoroutine);
-                }
-                IsEnter = false;
+                CheckCoroutine();
+                _volumeChange = StartCoroutine(SoundDecrease());
+                _isEnter = false;
                 _sprite.color = Color.white;
-                _soundDecreaseCoroutine = StartCoroutine(SoundDecrease());
             }
+        }
+    }
+
+    private void CheckCoroutine()
+    {
+        if (_volumeChange != null)
+        {
+            StopCoroutine(_volumeChange);
         }
     }
 
@@ -65,7 +66,7 @@ public class Signaling : MonoBehaviour
         for (float i = _alarm.volume; i > 0.001f; i -= 0.05f)
         {
             _alarm.volume = i;
-            if(_alarm.volume < 0.1f)
+            if (_alarm.volume < 0.1f)
             {
                 _alarm.Stop();
             }
