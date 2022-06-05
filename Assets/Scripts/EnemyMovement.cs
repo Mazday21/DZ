@@ -10,6 +10,8 @@ public class EnemyMovement : MonoBehaviour
     private Transform[] _points;
     private int _currentPoint;
     private Animator _animator;
+    private string _parameterRight = "run_right";
+    private string _parameterLeft = "run_left";
 
     private void Start()
     {
@@ -45,18 +47,18 @@ public class EnemyMovement : MonoBehaviour
     {
         if (target.position.x > transform.position.x)
         {
-            _animator.SetBool("run_left", false);
-            _animator.SetBool("run_right", true);
+            _animator.SetBool(_parameterLeft, false);
+            _animator.SetBool(_parameterRight, true);
         }
         else if (target.position.x < transform.position.x)
         {
-            _animator.SetBool("run_right", false);
-            _animator.SetBool("run_left", true);
+            _animator.SetBool(_parameterRight, false);
+            _animator.SetBool(_parameterLeft, true);
         }
         else
         {
-            _animator.SetBool("run_left", false);
-            _animator.SetBool("run_right", false);
+            _animator.SetBool(_parameterLeft, false);
+            _animator.SetBool(_parameterRight, false);
         }
     }
 }
