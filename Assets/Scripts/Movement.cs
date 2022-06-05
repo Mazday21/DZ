@@ -14,19 +14,30 @@ public class Movement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Vector3 collisionDir = collision.transform.position - transform.position;
-        float angleCollision = Vector3.Angle(collisionDir, transform.forward);
+        float angleCollision = FindingAngle(collision);
 
         if (angleCollision > 45f && angleCollision < 135f)
         {
             _grounded = true;
         }
     }
-
     private void OnCollisionExit2D(Collision2D collision)
     {
+        float angleCollision = FindingAngle(collision);
+
+        if (angleCollision > 45f && angleCollision < 135f)
+        {
             _grounded = false;
+        }
     }
+
+    private float FindingAngle(Collision2D collision)
+    {
+        Vector3 collisionDir = collision.transform.position - transform.position;
+        float angleCollision = Vector3.Angle(collisionDir, transform.forward);
+        return angleCollision;
+    }
+
 
     void Start()
     {
