@@ -6,13 +6,18 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] private float _speed;
     [SerializeField] private Rigidbody2D _rigidbody2D;
+    [SerializeField] private int _jumpForce = 50;
 
     private Animator _animator;
     private bool _grounded;
+    private int _inversion = -1;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.tag == "Ground")
+        Vector3 collisionDir = collision.transform.position - transform.position;
+        float angleCollision = Vector3.Angle(collisionDir, transform.forward);
+
+        if (angleCollision > 45f && angleCollision < 135f)
         {
             _grounded = true;
         }
@@ -20,10 +25,7 @@ public class Movement : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.collider.tag == "Ground")
-        {
             _grounded = false;
-        }
     }
 
     void Start()
@@ -40,7 +42,7 @@ public class Movement : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            transform.Translate(_speed * Time.deltaTime * -1, 0, 0);
+            transform.Translate(_speed * Time.deltaTime * _inversion, 0, 0);
             _animator.SetBool("run_left", true);
         }
         else
@@ -51,7 +53,7 @@ public class Movement : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Space) && _grounded)
         {
-            _rigidbody2D.AddForce(Vector2.up * 25);
+            _rigidbody2D.AddForce(Vector2.up * _jumpForce);
         }
     }
 }

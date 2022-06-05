@@ -29,22 +29,26 @@ public class EnemyMovement : MonoBehaviour
         var direction = (target.position - transform.position).normalized;
         transform.position = Vector3.MoveTowards(transform.position, target.position, _speed * Time.deltaTime);
 
-        if(transform.position == target.position)
+        if (transform.position == target.position)
         {
             _currentPoint++;
 
-            if(_currentPoint >= _points.Length)
+            if (_currentPoint >= _points.Length)
             {
                 _currentPoint = 0;
             }
         }
+        SwitchAnimator(target);
+    }
 
-        if(target.position.x > transform.position.x)
+    private void SwitchAnimator(Transform target)
+    {
+        if (target.position.x > transform.position.x)
         {
             _animator.SetBool("run_left", false);
             _animator.SetBool("run_right", true);
         }
-        else if(target.position.x < transform.position.x)
+        else if (target.position.x < transform.position.x)
         {
             _animator.SetBool("run_right", false);
             _animator.SetBool("run_left", true);
@@ -56,3 +60,5 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 }
+
+
