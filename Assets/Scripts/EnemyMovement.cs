@@ -7,14 +7,14 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private Transform _path;
     [SerializeField] private float _speed;
 
-    private AnimationManager _animationManager;
+    private AnimationSwitcher _animationSwitcher;
     private Transform[] _points;
     private int _currentPoint;
 
     private void Start()
     {
         _points = new Transform[_path.childCount];
-        _animationManager = gameObject.GetComponent<AnimationManager>();
+        _animationSwitcher = gameObject.GetComponent<AnimationSwitcher>();
 
         for (int i = 0; i < _path.childCount; i++)
         {
@@ -38,7 +38,7 @@ public class EnemyMovement : MonoBehaviour
                 _currentPoint = 0;
             }
         }
-        _animationManager.SwitchAnimator(target);
+        _animationSwitcher.SwitchAnimator(target);
     }
 }
 

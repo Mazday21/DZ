@@ -12,13 +12,13 @@ public class Movement : MonoBehaviour
     private int _inversion = -1;
     private float _firstAngleDown = 45f;
     private float _secondAngleDown = 135f;
-    private AnimationManager _animationManager;
+    private AnimationSwitcher _animationSwitcher;
     private bool _rightRun = false;
     private bool _leftRun = false;
 
     private void Start()
     {
-        _animationManager = gameObject.GetComponent<AnimationManager>();
+        _animationSwitcher = gameObject.GetComponent<AnimationSwitcher>();
     }
 
     private void Update()
@@ -46,7 +46,7 @@ public class Movement : MonoBehaviour
             _rigidbody2D.AddForce(Vector2.up * _jumpForce);
         }
 
-        _animationManager.SwitchAnimator(_rightRun, _leftRun);
+        _animationSwitcher.SwitchAnimator(_rightRun, _leftRun);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
