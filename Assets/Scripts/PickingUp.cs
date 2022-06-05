@@ -6,6 +6,8 @@ public class PickingUp : MonoBehaviour
 {
     [SerializeField] private AudioSource _audio;
 
+    private float _duration = 0.25f;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.TryGetComponent<Player>(out Player player))
@@ -16,8 +18,9 @@ public class PickingUp : MonoBehaviour
 
     IEnumerator Ring()
     {
+        WaitForSeconds wait = new WaitForSeconds(_duration);
         _audio.Play();
-        yield return new WaitForSeconds(0.25f);
+        yield return wait;
         Destroy(gameObject);
     }
 }

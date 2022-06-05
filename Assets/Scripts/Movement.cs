@@ -8,13 +8,46 @@ public class Movement : MonoBehaviour
     [SerializeField] private Rigidbody2D _rigidbody2D;
     [SerializeField] private int _jumpForce = 50;
 
-    private Animator _animator;
     private bool _grounded;
     private int _inversion = -1;
     private float _firstAngleDown = 45f;
     private float _secondAngleDown = 135f;
-    private string _parameterRight = "run_right";
-    private string _parameterLeft = "run_left";
+    private AnimationManager _animationManager;
+    private bool _rightRun = false;
+    private bool _leftRun = false;
+
+    private void Start()
+    {
+        _animationManager = gameObject.GetComponent<AnimationManager>();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.D))
+        {
+            transform.Translate(_speed * Time.deltaTime, 0, 0);
+            _leftRun = false;
+            _rightRun = true;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            transform.Translate(_speed * Time.deltaTime * _inversion, 0, 0);
+            _rightRun = false;
+            _leftRun = true;
+        }
+        else
+        {
+            _rightRun = false;
+            _leftRun = false;
+        }
+
+        if (Input.GetKey(KeyCode.Space) && _grounded)
+        {
+            _rigidbody2D.AddForce(Vector2.up * _jumpForce);
+        }
+
+        _animationManager.SwitchAnimator(_rightRun, _leftRun);
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -25,36 +58,6 @@ public class Movement : MonoBehaviour
     private void OnCollisionExit2D(Collision2D collision)
     {
         _grounded = !ToCheckAngleGround(collision);
-    }
-
-
-    private void Start()
-    {
-        _animator = gameObject.GetComponent<Animator>();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.Translate(_speed * Time.deltaTime, 0, 0);
-            _animator.SetBool(_parameterRight, true);
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            transform.Translate(_speed * Time.deltaTime * _inversion, 0, 0);
-            _animator.SetBool(_parameterLeft, true);
-        }
-        else
-        {
-            _animator.SetBool(_parameterLeft, false);
-            _animator.SetBool(_parameterRight, false);
-        }
-
-        if (Input.GetKey(KeyCode.Space) && _grounded)
-        {
-            _rigidbody2D.AddForce(Vector2.up * _jumpForce);
-        }
     }
 
     private bool ToCheckAngleGround(Collision2D collision)
