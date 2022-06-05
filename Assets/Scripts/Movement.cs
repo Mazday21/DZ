@@ -6,7 +6,7 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] private float _speed;
     [SerializeField] private Rigidbody2D _rigidbody2D;
-    [SerializeField] private int _jumpForce = 50;
+    [SerializeField] private float _jumpForce = 0.002f;
 
     private bool _grounded;
     private int _inversion = -1;
@@ -43,7 +43,7 @@ public class Movement : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Space) && _grounded)
         {
-            _rigidbody2D.AddForce(Vector2.up * _jumpForce);
+            _rigidbody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
         }
 
         _animationSwitcher.SwitchAnimator(_rightRun, _leftRun);
