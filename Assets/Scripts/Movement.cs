@@ -6,7 +6,8 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] private float _speed;
     [SerializeField] private Rigidbody2D _rigidbody2D;
-    [SerializeField] private float _jumpForce = 0.002f;
+    [SerializeField] private float _jumpForce = 2f;
+    [SerializeField] private AnimationCurve _jumpForceCurve;
 
     private bool _grounded;
     private int _inversion = -1;
@@ -15,10 +16,13 @@ public class Movement : MonoBehaviour
     private AnimationSwitcher _animationSwitcher;
     private bool _rightRun = false;
     private bool _leftRun = false;
+    private float _totalTimeJump;
+    private float _expiredTime;
 
     private void Start()
     {
         _animationSwitcher = gameObject.GetComponent<AnimationSwitcher>();
+        _totalTimeJump = _jumpForceCurve.keys[_jumpForceCurve.keys.Length - 1].time;
     }
 
     private void Update()
@@ -43,7 +47,8 @@ public class Movement : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Space) && _grounded)
         {
-            _rigidbody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+            _grounded = false;
+            StartCoroutine(Jump());
         }
 
         _animationSwitcher.SwitchAnimator(_rightRun, _leftRun);
@@ -53,7 +58,6 @@ public class Movement : MonoBehaviour
     {
         _grounded = ToCheckAngleGround(collision);
     }
-
 
     private void OnCollisionExit2D(Collision2D collision)
     {
@@ -69,9 +73,20 @@ public class Movement : MonoBehaviour
 
             if (angleCollision > _firstAngleDown && angleCollision < _secondAngleDown)
             {
+                _expiredTime = 0;
                 return true;
             }
         }
         return false;
+    }
+
+    private IEnumerator Jump()
+    {
+        while(_expiredTime <= _totalTimeJump && !_grounded)
+        {
+            transform.Translate(0, _jumpForceCurve.Evaluate(_expiredTime) * Time.deltaTime * _jumpForce, 0);
+            _expiredTime += Time.deltaTime;
+            yield return null;
+        }
     }
 }
