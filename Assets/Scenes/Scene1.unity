@@ -5131,7 +5131,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2734160221145044116, guid: 2f85c1533d9905944af3b998fe7e2a17, type: 3}
       propertyPath: _jumpForce
-      value: 40
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 2734160221145044116, guid: 2f85c1533d9905944af3b998fe7e2a17, type: 3}
       propertyPath: _jumpForceCurve.m_Curve.Array.size

@@ -1,28 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
     [SerializeField] private float _speed;
     [SerializeField] private Rigidbody2D _rigidbody2D;
-    [SerializeField] private float _jumpForce = 2f;
-    [SerializeField] private AnimationCurve _jumpForceCurve;
+    [SerializeField] private float _jumpForce = 12f;
+    [SerializeField] private float _fallMultiplier = 2.5f;
+    private readonly float _firstAngleDown = 45f;
+    private readonly int _inversion = -1;
+    private readonly float _secondAngleDown = 135f;
+    private AnimationSwitcher _animationSwitcher;
 
     private bool _grounded;
-    private int _inversion = -1;
-    private float _firstAngleDown = 45f;
-    private float _secondAngleDown = 135f;
-    private AnimationSwitcher _animationSwitcher;
-    private bool _rightRun = false;
-    private bool _leftRun = false;
-    private float _totalTimeJump;
-    private float _expiredTime;
+    private bool _leftRun;
+    private bool _rightRun;
 
     private void Start()
     {
         _animationSwitcher = gameObject.GetComponent<AnimationSwitcher>();
-        _totalTimeJump = _jumpForceCurve.keys[_jumpForceCurve.keys.Length - 1].time;
     }
 
     private void Update()
@@ -45,11 +40,13 @@ public class Movement : MonoBehaviour
             _leftRun = false;
         }
 
-        if (Input.GetKey(KeyCode.Space) && _grounded)
-        {
-            _grounded = false;
-            StartCoroutine(Jump());
-        }
+        if (Input.GetKey(KeyCode.Space) && _grounded) _rigidbody2D.velocity = Vector2.up * _jumpForce;
+
+        if (_rigidbody2D.velocity.y < 0)
+            _rigidbody2D.velocity += Vector2.up * (Physics2D.gravity.y * Time.deltaTime * (_fallMultiplier - 1));
+
+        else if (_rigidbody2D.velocity.y > 0)
+            _rigidbody2D.velocity += Vector2.up * (Physics2D.gravity.y * Time.deltaTime * (_fallMultiplier - 1));
 
         _animationSwitcher.SwitchAnimator(_rightRun, _leftRun);
     }
@@ -66,27 +63,17 @@ public class Movement : MonoBehaviour
 
     private bool ToCheckAngleGround(Collision2D collision)
     {
-        if (collision.collider.TryGetComponent<Ground>(out Ground ground))
+        if (collision.collider.TryGetComponent(out Ground ground))
         {
-            Vector3 collisionDir = collision.transform.position - transform.position;
-            float angleCollision = Vector3.Angle(collisionDir, transform.forward);
-
-            if (angleCollision > _firstAngleDown && angleCollision < _secondAngleDown)
+            var collisionDir = collision.transform.position - transform.position;
+            if (transform != null)
             {
-                _expiredTime = 0;
-                return true;
+                var angleCollision = Vector3.Angle(collisionDir, transform.forward);
+
+                if (angleCollision > _firstAngleDown && angleCollision < _secondAngleDown) return true;
             }
         }
-        return false;
-    }
 
-    private IEnumerator Jump()
-    {
-        while(_expiredTime <= _totalTimeJump && !_grounded)
-        {
-            transform.Translate(0, _jumpForceCurve.Evaluate(_expiredTime) * Time.deltaTime * _jumpForce, 0);
-            _expiredTime += Time.deltaTime;
-            yield return null;
-        }
+        return false;
     }
 }
